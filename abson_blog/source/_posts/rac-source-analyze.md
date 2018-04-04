@@ -21,9 +21,9 @@ tags: 源码分析
 >3.调用methodSignatureForSelector:方法，尝试获得一个方法签名。如果获取不到，则直接调用doesNotRecognizeSelector抛出异常。
 >4.调用forwardInvocation:方法，将地3步获取到的方法签名包装成Invocation传入，如何处理就在这里面了。
 
+![](/images/rac-source-analyze/2017-02-25-Message-Forwarding.png) 
 
-
-##### static Class RACSwizzleClass(NSObject *self) 
+### static Class RACSwizzleClass(NSObject *self) 
 ```objectivec
 static Class RACSwizzleClass(NSObject *self) 
 {
@@ -97,7 +97,7 @@ static Class RACSwizzleClass(NSObject *self)
 4. [RACSwizzleForwardInvocation](#####  static void RACSwizzleForwardInvocation(Class class)) 利用运行时替换消息转发的方法 
 `forwardInvocation:` ，由 [NSObjectRACSignalForSelector](##### static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Protocol *protocol)) 代码中可以看到，所传入的方法参数 `selector` 都被换成了 `_objc_msgForward` 方法，所以，当方法 `selector` 调用是，自然就会调用 `forwardInvocation:` 方法了。
 
-#####  static void RACSwizzleForwardInvocation(Class class)
+###  static void RACSwizzleForwardInvocation(Class class)
 ```objectivec
 static void RACSwizzleForwardInvocation(Class class) {
   SEL forwardInvocationSEL = @selector(forwardInvocation:);
@@ -127,7 +127,7 @@ static void RACSwizzleForwardInvocation(Class class) {
 2. 然后创建新的  `forwardInvocation:` block 函数 `newForwardInvocation`, block 函数内部先调用 [RACForwardInvocation](##### static BOOL RACForwardInvocation(id self, NSInvocation *invocation)) 函数，以调用映射过后的 `rac_alias_ + @selector`  函数(实际上是 `@selector`的复制体)，然后给热信号 `subject `发送信号 Next 以调用订阅 block `nexblock`.
 3. 利用 `class_replaceMethod` 方法替换了 class 的对象方法 `forwardInvocation:` 为新的 `newForwardInvocation` block 函数.
 
-##### static BOOL RACForwardInvocation(id self, NSInvocation *invocation)
+### static BOOL RACForwardInvocation(id self, NSInvocation *invocation)
 ```objectivec 
 static BOOL RACForwardInvocation(id self, NSInvocation *invocation) {
   SEL aliasSelector = RACAliasForSelector(invocation.selector);
@@ -148,7 +148,7 @@ static BOOL RACForwardInvocation(id self, NSInvocation *invocation) {
 ```
 由 [NSObjectRACSignalForSelector](##### static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Protocol *protocol)) 中知道，热信号 subject 已经被创建了， 而且利用了 `class_addMethod ` 方法完成了被监听方法 `@selector` 的复制体 `rac_alias_ + @selector` 方法，所以这里直接利用  `[invocation invoke]`调用  `rac_alias_ + @selector` 方法，然后再像热信号 `subject` 发送 `next` 信号并且带上 `rac_alias_ + @selector` 方法的参数数组`rac_argumentsTuple`以调用 nextblock.
 
-##### - (RACTuple *)rac_argumentsTuple
+### - (RACTuple *)rac_argumentsTuple
 ```objectivec 
 - (RACTuple *)rac_argumentsTuple {
   NSUInteger numberOfArguments = self.methodSignature.numberOfArguments;
