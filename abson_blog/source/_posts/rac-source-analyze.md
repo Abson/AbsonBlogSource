@@ -2,6 +2,9 @@
 title: RAC 源码分析(一)
 date: 2018-04-02 15:26:25
 tags: 源码分析
+categories: 
+			- 源码分析
+			- iOS
 ---
 
 > RecativeCoCoa objectivec 版本的分析，第一部分主要阐述 `rac_signalForSelector:` 该方法的实现，观摩一下 RAC 是如何监听方法回调的.
