@@ -2,10 +2,10 @@
 title: FastImageCache 架构分析
 date: 2018-04-10 21:15:54
 tags:
-			- 第三方框架
+- 第三方框架
 categories: 
-			- 第三方框架
-			- iOS
+- 第三方框架
+- iOS
 ---
 ### 文章介绍
 本文章注重分析 [FastImageCache](https://github.com/path/FastImageCache) 这个 Github 第三方图片IO库的架构和部分分析等等。

@@ -8,7 +8,7 @@ categories:
 			- iOS
 ---
 
-当我们使用图片存储的时候，难免会设计到文件IO，GPU渲染等问题，文章注重从计算机操作系统方面深入浅析地讲解如何优化图片IO的速度，提高 iOS 中 UIImageView 的渲染效率和内存优化，这对我们做多图片相册等应用会非常有帮助，而且让我们把[阅读CASPP——进程篇](https://simplecodesky.com/2018/04/03/process-from-csapp/)和[阅读CSAPP——虚拟内存篇](https://simplecodesky.com/2018/04/03/virtual-memory-from-csapp/)这两篇文章学到的内容进行实战应用。
+当我们使用图片存储的时候，难免会涉及到文件IO，GPU渲染等问题，文章注重从计算机操作系统方面深入浅析地讲解如何优化图片IO的速度，提高 iOS 中 UIImageView 的渲染效率和内存优化，这对我们做多图片相册等应用会非常有帮助，而且让我们把[阅读CASPP——进程篇](https://simplecodesky.com/2018/04/03/process-from-csapp/)和[阅读CSAPP——虚拟内存篇](https://simplecodesky.com/2018/04/03/virtual-memory-from-csapp/)这两篇文章学到的内容进行实战应用。
 
 <!-- more -->
 
@@ -129,4 +129,6 @@ CGImageRef imageRef = CGImageCreate((size_t) pixelSize.width, (size_t) pixelSize
 CGDataProviderRelease(dataProvider);
 CGColorSpaceRelease(colorSpace);
 ```
+### 内核态和用户态的切换？
+
 
