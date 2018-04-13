@@ -27,11 +27,11 @@ iOS从磁盘加载一张图片，使用UIImageVIew显示在屏幕上，需要经
 	6.1 如果数据没有字节对齐，Core Animation会再拷贝一份数据，进行字节块对齐。
 	6.2 GPU处理位图数据，进行渲染。
 	
-FastImageCache 分别优化了2,4,6.1三个步骤：
+FastImageCache 分别优化了 3,5,7.1三个步骤：
 
-1.	使用`mmap`内存映射函数，省去了上述第2步数据从内核空间拷贝到用户空间和内核态的操作和用户态之间的切换消耗。
-2.	缓存解码后的位图数据到磁盘，下次从磁盘读取时省去第4步解码的操作。
-3.	生成字节块对齐的数据，防止上述第6.1步CoreAnimation在渲染时再拷贝一份数据。
+1.	使用`mmap`内存映射函数，省去了上述第3步数据从内核空间拷贝到用户空间和内核态的操作和用户态之间的切换消耗。
+2.	缓存解码后的位图数据到磁盘，下次从磁盘读取时省去第5步解码的操作。
+3.	生成字节块对齐的数据，防止上述第7.1步CoreAnimation在渲染时再拷贝一份数据。
 
 接下来具体介绍这三个优化点以及它的实现。
 
@@ -60,9 +60,9 @@ FastImageCache也是在子线程解码图像，不同的是它会缓存解码后
 关于的总体结构如下图：
 ![](/images/ios-fastimagecache-opensource-interpretation/fastImageCache3.png)
 
-上图中 ImageCache 是一个单例，用户管理整个图片框架系统。
+上图中 ImageCache 是一个**单例**，用作管理整个图片框架系统。
 
-FastImageCache 为了更好的读存图片数据，将所有字节相同的图片都放在一起，也就是所有格式相同的图片都放在同一个文件系统当中，而在 FastImageCache 中，`imageFormat` 分为 4 种格式：
+FastImageCache 为了更好的读存图片数据，将所有图像字节大小相同的图片都放在一起，也就是所有格式相同的图片都放在同一个文件系统当中(这个后面会讲到)，而在 FastImageCache 中，`imageFormat` 分为 4 种格式：
 ```
 FICImageFormatStyle32BitBGRA,
 FICImageFormatStyle32BitBGR,
@@ -70,9 +70,9 @@ FICImageFormatStyle16BitBGR,
 FICImageFormatStyle8BitGrayscale,
 ```
 
-* ImageTable：每一种格式都对应一个 `ImageTable` 结构体，一个 `ImageTable` 更是一个真实的文件，可以叫做一个真实的文件系统，命名为 `xxx.table` 文件放在沙盒的 Cache 文件夹当中。
-* Chunk：`ImageTable`拥有多个 `Chunk`，而 `Chunk` 被设置为 2M 大小的内存块，存在于 ImageTable 文件系统中，获取的时候通过内存映射 `mmap` 作为共享内存映射到用户空间的虚拟内存当中。
-* Entry： `Chunk`存在着多个`Entry`, 因为操作系统当中访问磁盘，都是以磁盘页和内存页的方式存在于磁盘和物理内存当中，在 64 位 Unix操作系统中，一般为 **4KB**，这个大小可以通过设置操作系统更改，所以 `Entry` 为了加快访问数据字节访问获取速度和节省由于页不对齐而导致的 CPU 周期增加的消耗，就采用页对齐的方式。
+* **ImageTable**：每一种格式都对应一个 `ImageTable` 结构体，一个 `ImageTable` 更是一个真实的文件，可以叫做一个真实的文件系统，命名为 `xxx.table` 文件放在沙盒的 Cache 文件夹当中。
+* **Chunk**：`ImageTable`拥有多个 `Chunk`，而 `Chunk` 被设置为 2M 大小的内存块，存在于 ImageTable 文件系统中，获取的时候通过内存映射 `mmap` 作为共享内存映射到用户空间的虚拟内存当中。
+* **Entry**： `Chunk`存在着多个`Entry`, 因为操作系统当中访问磁盘，都是以磁盘页和内存页的方式存在于磁盘和物理内存当中，在 64 位 Unix操作系统中，一般为 **4KB**，这个大小可以通过设置操作系统更改，所以 `Entry` 为了加快访问数据字节访问获取速度和节省由于页不对齐而导致的 CPU 周期增加的消耗，就采用页对齐的方式。
 `Entry` 中存储着一个图片的字节数组，和 `Meta(ImageCache用到的一些 UUID 的唯一图片标识)`，而 `ImageData` 为了避免发生 copy_images 的发生，更是采用了字节块对齐。
 
 而这些实现细节，可以查看[iOS高效图片 IO 框架是如何炼成的](https://simplecodesky.com/2018/04/10/ios-efficient-image-io/)。
