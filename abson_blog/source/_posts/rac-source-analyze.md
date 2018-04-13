@@ -219,7 +219,7 @@ static void RACSwizzleForwardInvocation(Class class) {
 }
 ```
 1. 定义 IMP 函数指针指针 `originalForwardInvocation` ，指向  `class` 类的 `forwardInvocation` 内部函数实现，
-2. 然后创建新的  `forwardInvocation:` block 函数 `newForwardInvocation`, block 函数内部先调用 [RACForwardInvocation](##### static BOOL RACForwardInvocation(id self, NSInvocation *invocation)) 函数，以调用映射过后的 `rac_alias_ + @selector`  函数(实际上是 `@selector`的复制体)，然后给热信号 `subject `发送信号 Next 以调用订阅 block `nexblock`.
+2. 然后创建新的  `forwardInvocation:` block 函数 `newForwardInvocation`, block 函数内部先调用 [RACForwardInvocation](### RACForwardInvocation) 函数，以调用映射过后的 `rac_alias_ + @selector`  函数(实际上是 `@selector`的复制体)，然后给热信号 `subject `发送信号 Next 以调用订阅 block `nexblock`.
 3. 利用 `class_replaceMethod` 方法替换了 class 的对象方法 `forwardInvocation:` 为新的 `newForwardInvocation` block 函数.
 
 ### RACForwardInvocation
@@ -243,7 +243,7 @@ static BOOL RACForwardInvocation(id self, NSInvocation *invocation) {
 ```
 由 [NSObjectRACSignalForSelector](##### static RACSignal *NSObjectRACSignalForSelector(NSObject *self, SEL selector, Protocol *protocol)) 中知道，热信号 subject 已经被创建了， 而且利用了 `class_addMethod ` 方法完成了被监听方法 `@selector` 的复制体 `rac_alias_ + @selector` 方法，所以这里直接利用  `[invocation invoke]`调用  `rac_alias_ + @selector` 方法，然后再像热信号 `subject` 发送 `next` 信号并且带上 `rac_alias_ + @selector` 方法的参数数组`rac_argumentsTuple`以调用 nextblock.
 
-### - (RACTuple *)rac_argumentsTuple
+### rac_argumentsTuple
 ```objectivec 
 - (RACTuple *)rac_argumentsTuple {
   NSUInteger numberOfArguments = self.methodSignature.numberOfArguments;
