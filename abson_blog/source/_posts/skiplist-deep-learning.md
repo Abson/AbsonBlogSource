@@ -26,7 +26,7 @@ leveldb 存取数据，都在用 MemTable 这个结构体，而 MemTable 核心�
 
 现在我们来一边用代码加图解来分析一下跳表魅力！
 
-##### 跳表数据存储模型
+### 跳表数据存储模型
 
 跳表数据结构如下：
 
@@ -79,10 +79,10 @@ ps:图中虚线链接表述数组关系，实现标识指针链表关系
 
 后面我们会称为图中竖向(dowm)节点为`节点数组`，横向(left)的节点为`节点链表`
 
-##### 初始化跳表
+### 初始化跳表
 
 首先为了实现这个结构，我们来初始化跳表
-```
+```cpp
 enum {kMaxLevel = 12}; // 这里初始化默认跳表最大层数高度为12
 
 template <typename Key, typename Value>
@@ -101,14 +101,14 @@ SkipList<Key, Value>::SkipList() : head_(NewNode( kMaxLevel, 0, 0)), rnd_(0xdead
 
 当然，这些节点都是空的就是了。[NewNode 方法查看](#生成节点方法)
 
-##### 插入操作
+### 插入操作
 
 插入操作分为两步：
 1. 查找每层链表，知道找到该插入的位置（因为要保持有序的）
 2. 更新节点指针和跳表高度
 
 第一步：
-```
+```cpp
 template <typename Key, typename Value>
 typename SkipList<Key, Value>::Node*
 SkipList<Key, Value>::FindGreaterOrEqual(const Key& key, Node** prev) const
@@ -136,7 +136,7 @@ SkipList<Key, Value>::FindGreaterOrEqual(const Key& key, Node** prev) const
 
 
 第二步：
-```
+```cpp
 template <typename Key, typename Value>
 bool SkipList<Key, Value>::Insert(const Key& key, const Value& value) {
   
@@ -183,9 +183,9 @@ bool SkipList<Key, Value>::Insert(const Key& key, const Value& value) {
 [randomLevel 随机层数生成](#随机层数生成数方法实现)
 [setNext 设置节点链表](#有关节点结构体的方法实现)
 
-##### 查找操作
+### 查找操作
 插入操作中的第一步就是我们的查找操作了，就不做解析了，直接封装一层代码
-```
+```cpp
 template <typename Key, typename Value>
 Value
 SkipList<Key, Value>::Find(const Key &key) {
@@ -197,14 +197,14 @@ SkipList<Key, Value>::Find(const Key &key) {
 }
 ```
 
-##### 删除操作
+### 删除操作
 在 leveldeb 中，跳表 SkipList 是没有删除操作的，leveldb 的跳表只是用来增加节点个查询节点，如果要删除某个节点，只是将某个节点标记为删除，因为删除操作又得重新计算 level 层数，更新每层的节点链表，这样太耗费性能了。
 
 但是我们在这里还是实现一下跳表的删除操作，同样的，跳表删除和插入操作相同
 1. 首先查找到需要删除的节点
 2. 如果找到该节点，更新指针域，需要更新 level 的话，逐层更新每个链表
 
-```
+```cpp
 template <typename Key, typename Value>
 bool
 SkipList<Key, Value>::Delete(const Key&key)
@@ -243,10 +243,10 @@ SkipList<Key, Value>::Delete(const Key&key)
 如 图4.1所示，删除节点 key=17 时候的操作，先查找并返回 next 节点，检查 next 节点是否 key=17，如果是的是，则将逐层的跳点全部更新过来，并更新层数。
 
 
-##### 附属实现代码
+### 附属实现代码
 
-###### 生成节点方法
-```
+#### 生成节点方法
+```cpp
 template <typename Key, typename Value>
 typename SkipList<Key, Value>::Node*
 SkipList<Key, Value>::NewNode(int level, const Key& key,  const Value& value)
@@ -268,7 +268,7 @@ SkipList<Key, Value>::NewNode(int level, const Key& key,  const Value& value)
 
 代码生成了图6.1的结构，level0 节点的 forward_ 数组大小为4，leve1 ~ level3 都为空节点，但是分配了 8 个字节的指针内存 (64位操作系统)。图中虚线为数组引用表达，并不是指针指向。
 
-###### 随机层数生成数方法实现
+#### 随机层数生成数方法实现
 取自google开源项目leveldb的实现
 ```cpp
 template <typename Key, typename Value>
@@ -314,8 +314,8 @@ uint32_t Next( uint32_t& seed) {
 ```
 总体来说这个 level 层数的生成方法也不是随机的，根据 seed 不断被修改的次数来决定层数，换而言之就是 level0 节点数量来决定层数。
 
-###### 有关节点结构体的方法实现
-```
+#### 有关节点结构体的方法实现
+```cpp
 template <typename Key, typename Value>
 void 
 SkipList<Key, Value>::SetNext(int i, Node* x) {
@@ -341,8 +341,8 @@ SetNext(int i, Node* x) 方法是设置 forward_ 节点数组第 i 层(level)的
 
 Next(int i) 为取出某层节点链表的方法，这个应该不应解析了吧。
 
-###### 输出跳表结构
-```
+#### 输出跳表结构
+```cpp
 template <typename Key, typename Value>
 void
 SkipList<Key, Value>::Print()
