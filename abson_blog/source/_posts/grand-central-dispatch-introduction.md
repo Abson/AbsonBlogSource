@@ -53,7 +53,7 @@ dispatch_async(queue, block);
 #### 线程问题
 
 ##### 主线程中的死锁
-```
+```objectivec
 NSLog(@"1");
 dispatch_sync(dispatch_get_main_queue(), ^(){
 	NSLog(@"2");
@@ -72,7 +72,7 @@ dispatch_get_main_queue **主线程队列**，也可以叫做**串行队列**，
 
 **`dispatch_sync(dispatch_get_main_queue(), block)`是否一定会造成死锁呢？上面问题如果并不是放在主线程中有会怎么样？**
 
-```
+```objectivec
 NSLog(@"1");
 dispatch_queue_t queue = dispatch_queue_create("com.queue.concurrent", DISPATCH_QUEUE_CONCURRENT);
 dispatch_async(queue), ^(){
@@ -94,7 +94,7 @@ NSLog(@"5");
 
 上面例子说明一件事，**dispatch_async 同步线程会阻塞当前线程直至同步线程内的事件(block)执行完，至于是否会发生死锁，就得看同步线程所阻塞的线程是否存在它的线程队列（queue）中**。
 
-```
+```objectivec
 current thread
 
 dispatch_sync(queue), block)
@@ -182,26 +182,25 @@ self.synchronizationQueue = dispatch_queue_create([name cStringUsingEncoding:NSA
 上面一段代码才子 AFNetWorking 中的 AFImageDownloader.m 文件当中，作者创建了 synchronizationQueue 串行队列专门用作阻塞当前线程，限制性同步队列中的事件，判断 url 是否为空，但是为什么要这样做呢？
 
 原因1：
-因为对象方法 `downloadImageForURLRequest:withReceiptID:success:failure` 是同一个对象在多个异步线程的并发队列当中执行的，因为并发在逻辑上会同时触发异步线程，那么传进来的参数（request，receiptID，success，failure）会由于**资源竞争(condition race)** 的情况下会被覆盖，所以我们需要进行阻塞这个线程，先执行完一个请求后再执行另外一个请求
+因为对象方法 `downloadImageForURLRequest:withReceiptID:success:failure` 是同一个对象在多个异步线程的并发队列当中执行的，因为并发在逻辑上会同时触发异步线程，那么传进来的参数（request，receiptID，success，failure）会由于**资源竞争(condition race)** 的情况下会被覆盖，所以我们需要进行阻塞这个线程，先执行完一个请求后再执行另外一个请求。
 
 但是会有人问：为什么么不用 `@synchronized (<#lock#>) {}` ?
-因为我们首先不确定调用对象方法 `downloadImageForURLRequest:withReceiptID:success:failure` 是否必定在异步线程中被调用，莫名的加锁会消耗资源，当我们使用了 ` dispatch_sync(self.synchronizationQueue,block)` 后，如果主线程当中被调用，也只会忽视这个方法，直接调用 block，因为阻塞主线程，往并不是主线程队列的线程队列中添加时间，是没有意义的。
+因为我们首先不确定调用对象方法`downloadImageForURLRequest:withReceiptID:success:failure`是否必定在异步线程中被调用，莫名的加锁会消耗资源，当我们使用了`dispatch_sync(self.synchronizationQueue,block)`后，如果主线程当中被调用，也只会忽视这个方法，直接调用 block，因为阻塞主线程，往并不是主线程队列的线程队列中添加事件，是没有意义的。
 
 **使用 dispatch_sync(self.synchronizationQueue,block) 需要注意什么问题？**
-其实上面这么写，是有问题的，当方法 `downloadImageForURLRequest:withReceiptID:success:failure` 的调用上层，也是`dispatch_sync(self.synchronizationQueue,block)` 的情况下，就会造成死锁，就像下面一样
+其实上面这么写，是有问题的，当方法 `downloadImageForURLRequest:withReceiptID:success:failure` 的调用上层，也是`dispatch_sync(self.synchronizationQueue,block)` 的情况下，就会造成死锁，就像下面一样：
 
-```
+```objectivec
 dispatch_sync(self.synchronizationQueue, ^(){
 	NSLog(@"2");
-    dispatch_sync(self.synchronizationQueue, ^(){
+	dispatch_sync(self.synchronizationQueue, ^(){
       NSLog(@"3");
-    });
-    NSLog(@"4");
+	});
+	NSLog(@"4");
 });
 ```
-
 或
-```
+```objectivec
 dispatch_async(self.synchronizationQueue, ^(){
 	NSLog(@"2");
     dispatch_sync(self.synchronizationQueue, ^(){
@@ -213,6 +212,52 @@ dispatch_async(self.synchronizationQueue, ^(){
 
 至于怎么分析，为什么会发生死锁，各位看官，这就留给你们的作业，看了这么多，相信大家也会明白，特别是第二个例子，我们刚讲过，希望大家能在这篇博客中学到东西。
 
+### 线程与队列的区分
+说了这么多，大家都对队列和线程有了比较深刻的理解，这个时候有同学就会问，我们该怎么区分我们的`block`是在主线程中调用还是在子线程调用呢？这是什么意思？我们来看看代码：
+```objectivec
+dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+	NSThread* thread = [NSThread currentThread];
+	NSLog(@"%@", thread);
+});
+```
+想象一下，`thread`是主线程还是子线程？答案当然是主线程了，为什么？**因为`block`执行那个线程上，跟是在串行队列还是并行队列是没有关系的，线程队列的概念只是负责把`block`事件放在自己的缓冲区中排好队，然后判断是串行队列还是并行队列来把缓冲区的队列进行顺序执行还是一起执行。**
+而代码中开启了一个同步线程，阻塞了主线程，所以`block`必须在主线程中执行，而且与此同时，全局并发队列中的所有事件也会一起执行(看上去是这样的，实际上还是有一定的顺序，只是通过时间片不断切换，看上去好像是并发).
+
+再看看另一个例子：
+```objectivec
+dispatch_queue_t queue = dispatch_queue_create("com.ser.yy", DISPATCH_QUEUE_SERIAL);
+dispatch_async(queue, ^{
+	NSThread* thread = [NSThread currentThread];
+	NSLog(@"%@", thread);
+});
+```
+这里创建了一个异步线程，但却把`block`事件放在在串行队列中。所以`block`会放在一条子线程上面，并等待串行队列`queue`前面的事件执行完了，才会在子线程中执行。
+
+再看以下例子：
+```objectivec
+dispatch_queue_t queue = dispatch_queue_create("com.ser.yy", DISPATCH_QUEUE_SERIAL);
+dispatch_async(queue, ^{
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		NSThread* thread = [NSThread currentThread];
+		NSLog(@"%@", thread);
+	});
+});
+```
+例子中，把异步线程事件`block1`放在串行队列中，然后在事件`block1`中开启了一个同步线程事件`block2`放在主线程当中来执行.
+很显然，`thread`就是子线程。
+
+**其实大家很快就发现一个规律，同步线程`dispatch_sync`的事件`block`，它的执行线程便是被阻塞的线程！而异步线程`dispatch_async`的事件`block`,除了放在主队列`dispatch_get_main_queue`中，其他都会在子线程中执行！**
+
+为什么异步线程`dispatch_async`的事件`block`,除了放在主队列`dispatch_get_main_queue`中，其他都会在子线程中执行呢？
+```objectivec
+dispatch_async(dispatch_get_main_queue(), ^{
+	NSThread* thread = [NSThread currentThread];
+	NSLog(@"%@", thread);
+});
+```
+因为主队列`dispatch_get_main_queue`是一个串行队列，更重要的是它会将所有事件`block`都会放在主线程这一条线程中执行！
+
 ----
 写在最后：
 > 为什么要写这篇文章呢？主要今天在某公司面试的时候，被问到了关于 GCD 的线程问题，在我说出来答案后，面试官依然坚持已见，认为我是错的，写这篇博客的目的在于，不管这个面试官是否会游览博客，也让更多的面试官可以好好更新自己的知识储备库，不要做井底之蛙。其实在我看来，面试是一个双向交流的过程，我并不在意是否能你们公司工作，毕竟我也不想同事是一群无法交流的人，一个开心愉快并且能够助我成长的工作环境才是我真正需要的。
+
