@@ -63,4 +63,49 @@ NSInteger ARDGetCpuUsagePercentage() {
                 sizeof(thread_act_t) * thread_count);
   return lroundf(cpu_usage_percentage);
 
-``` 
+```
+ 
+### 字节对齐
+**8个字节对齐**
+```cpp
+#   define WORD_MASK 7UL
+static inline uint32_t word_align(uint32_t x) {
+    return static_cast<uint32_t>((x + WORD_MASK) & ~WORD_MASK);
+}
+static inline size_t word_align(size_t x) {
+    return (x + WORD_MASK) & ~WORD_MASK;
+}
+```
+
+### 指针的二进制、十进制、八进制输出
+
+**二进制**
+```cpp
+const void* p
+std::cout << std::bitset<sizeof(int32_t)*8>((uintptr_t)p) << std::endl;
+```
+**十进制**
+```cpp
+const void* p
+std::cout << (uintptr_t)p << std::endl;
+```
+**十六进制**
+```cpp
+const void* p
+std::cout << std::hex << (uintptr_t)p << std::endl;
+```
+**八进制**
+```cpp
+const void* p
+std::cout << std::oct << (uintptr_t)p << std::endl;
+```
+
+### 利用模板函数将数字转为字符串
+```
+const char digits[] = "9876543210123456789";const char* zero = digits + 9;
+
+template<typename T>size_t covert(char buf[], T value){  T i = value;  char* p = buf;  /*从 value 中每个位转为  0-9 的字符串*/  do   {    int lsd = static_cast<int>( i % 10 );    i /= 10;    *p++ = zero[lsd];  } while(i != 0);  /*添加正负号*/  if (value < 0)  {    *p++ = '-';  }  *p = '\0';
+  /* 由于是从个位开始添加字符串的，需要反转容器元素顺序 */  std::reverse(buf, p);  return p - buf;}
+```
+
+

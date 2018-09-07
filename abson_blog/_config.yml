@@ -7,13 +7,13 @@ title: Simple Code Sky
 subtitle: As the word in the movie of《catch me if you can》—— "To the moon".
 description: iOS|C++|Unix|伪知识份子 
 keywords: Abson 
-author: Abson
+author: 何劍聪
 language: zh-Hans #语言 
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://simplecodesky.com
+url: https://simplecodesky.com
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
