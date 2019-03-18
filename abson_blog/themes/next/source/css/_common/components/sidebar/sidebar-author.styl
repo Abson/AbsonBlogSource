@@ -5,14 +5,23 @@
   max-width: $site-author-image-width;
   height: $site-author-image-height;
   border: $site-author-image-border-width solid $site-author-image-border-color;
-  // 头像圆形样式
-  /* start */
-  border-radius: 50%
-  webkit-transition: 1.4s all;
-  moz-transition: 1.4s all;
-  ms-transition: 1.4s all;
-  transition: 1.4s all;
-  /* end */
+  opacity: hexo-config('avatar.opacity') is a 'unit' ? hexo-config('avatar.opacity') : 1;
+}
+
+if hexo-config('avatar.rounded') {
+  .site-author-image {
+    border-radius: 100%;
+  }
+}
+
+if hexo-config('avatar.rotated') {
+  .site-author-image {
+    transition: transform 1.0s ease-out;
+  }
+
+  .site-author-image:hover {
+    transform: rotateZ(360deg);
+  }
 }
 
 .site-author-name {
@@ -21,19 +30,10 @@
   color: $site-author-name-color;
   font-weight: $site-author-name-weight;
 }
+
 .site-description {
   margin-top: $site-description-margin-top;
   text-align: $site-description-align;
   font-size: $site-description-font-size;
   color: $site-description-color;
-}
-
-// 头像旋转事件
-/* start */
-.site-author-image:hover {
-  background-color: #55DAE1;
-  webkit-transform: rotate(360deg) scale(1.1);
-  moz-transform: rotate(360deg) scale(1.1);
-  ms-transform: rotate(360deg) scale(1.1);
-  transform: rotate(360deg) scale(1.1);
 }

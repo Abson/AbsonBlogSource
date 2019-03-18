@@ -1,12 +1,14 @@
 .site-state {
+  display: flex;
+  justify-content: center;
   overflow: hidden;
   line-height: 1.4;
   white-space: nowrap;
   text-align: $site-state-align;
+  margin-top: 10px;
 }
 
 .site-state-item {
-  display: inline-block;
   padding: 0 15px;
   border-left: 1px solid $site-state-item-border-color;
 
@@ -14,6 +16,7 @@
 
   a { border-bottom: none; }
 }
+
 .site-state-item-count {
   display: block;
   text-align: center;
