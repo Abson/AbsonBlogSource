@@ -4,6 +4,8 @@ date: 2019-03-18 01:54:21
 tags:
 ---
 
+所有的句子都是 `简单句、并列句、复合句` 这三种类型
+
 
 ### 从句
 #### 名词性从句
@@ -59,7 +61,7 @@ be动词(系语)：`is`
 名词(宾语): `the fact that he like football`
 同位语从句：`that he like football` 
 
-#### 定于从句
+#### 定语从句
 **什么是定语从句?**
 修饰限定名词，汉语中 "的" 前面的内容：红红的花. (英文跟中文相反，一定注意不要头重脚轻，比较长的形容语句要放在后面)
 
@@ -133,20 +135,52 @@ A-->C("短语或从句. (长一些)")
 
 #### 状语从句
 **什么是状语：**
-
 * 副词： 修饰动词，walk slowly (慢慢地走)。 修饰形容词或定语, slightly higher (稍微高点)、 petty tall(挺高的)
 * 起副词作用的句子 --> 状语从句
 * 按作用分：
-  * 时间状语(从句)：何时？ He came `yestoday`
-  * 地点状语(从句): 在哪？ he celebrated his birthday `at school`.
-  * 原因状语(从句): 为啥？因为... 简单句：He like spring `for` its beauty. 从句(除了since前后都可以之外，其他的都靠后)：He likes spring `for` it is beautiful. He like spring `because` it is beautiful. He like spring `as` it is beautiful. He like spring `since` it is beautiful. 
-  * 条件状语(从句): 在什么情况下？如果..； 只要...; 只有...
-  * 目的状语(从句): 为啥？为了...; 怎样才能....
+  * 时间状语(从句)：何时？ 
+    * 简单句：
+      * He came `yestoday`
+    * 从句：
+      * He called me `when` I was sleeping.
+  * 地点状语(从句): 在哪？ 
+    * 简单句：
+      * He celebrated his birthday `at school`.
+    * 从句：
+      * We met `where` we used to go for a walk.
+  * 原因状语(从句): 为啥？因为... 
+    * 简单句：He like spring `for` its beauty. 
+    * 从句(除了since前后都可以之外，其他的都靠后)：
+      * He likes spring `for` it is beautiful. 
+      * He like spring `because` it is beautiful. 
+      * He like spring `as` it is beautiful. 
+      * He like spring `since` it is beautiful. 
+  * 条件状语(从句): 在什么情况下？如果..； 只要...; 只有... 
+    * `If` you win, there will be a reward. 
+    * `As long As you` win, there will be a return
+  * 目的状语(从句): 为啥？为了...; 怎样才能.... 
+    * 简单句：
+      * I study `for` my well-being. 
+      * I don't spend `extra` to save money.
+      * I don't spend `in order to` save money.
+    * 从句： 
+      * I don't spend `so that` I can save money.
   * 结果状语(从句): 导致了啥？结果...; 以至于...
+    * He tried `so` hard `that` he finally succeeded.
   * 让步状语(从句): 转折的前奏: 虽然...
+    * `Although you have a point there, I don't agree with your proposal`
   * 方式状语(从句): 怎么做的/发生的？用...；通过...
+    * 简单句：
+      * I learn English `through` an online course.
+      * I contact my friends `via` Wechat.
+      * I draw `with` my pen.
+      * I found differences `by` contrasting the two.
+    * 从句：
+      * She looks at me `as if` she knows me.
+      * He finished the work `as` I told him to.
+
+**PS: 状语从句是存在于简单句(主谓宾)之外的.**
 
 他昨天为了庆祝生日在车库里举办了一个生日派对，虽然他都快没钱了.
 `He held a birthdayparty yestoday in the carport in order to celebrate his birthday, although he is almost out of money.`
 
-状语从句是存在于简单句(主谓宾)之外的.
