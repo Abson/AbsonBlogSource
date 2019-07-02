@@ -8,7 +8,7 @@ categories:
 			- iOS
 ---
 
-当我们使用图片存储的时候，难免会涉及到文件IO，GPU渲染等问题，文章注重从计算机操作系统方面深入浅析地讲解如何优化图片IO的速度，提高 iOS 中 UIImageView 的渲染效率和内存优化，这对我们做多图片相册等应用会非常有帮助，而且让我们把[阅读CASPP——进程篇](https://simplecodesky.com/2018/04/03/process-from-csapp/)和[阅读CSAPP——虚拟内存篇](https://simplecodesky.com/2018/04/03/virtual-memory-from-csapp/)这两篇文章学到的内容进行实战应用。
+当我们使用图片存储的时候，难免会涉及到文件IO，GPU渲染等问题，文章注重从计算机操作系统方面深入浅析地讲解如何优化图片IO的速度，提高 iOS 中 UIImageView 的渲染效率和内存优化，这对我们做多图片相册等应用会非常有帮助，而且让我们把[阅读CASPP——进程篇](https://abson.github.io.com/2018/04/03/process-from-csapp/)和[阅读CSAPP——虚拟内存篇](https://abson.github.io.com/2018/04/03/virtual-memory-from-csapp/)这两篇文章学到的内容进行实战应用。
 
 <!-- more -->
 
@@ -217,7 +217,7 @@ CPU 读取内存页过程:
     return self;
 }
 ```
-这里就有一个疑问了，通过[FastImageCache 架构分析](https://simplecodesky.com/2018/04/10/ios-fastimagecache-opensource-interpretation/)文章中知道，一个图片文件应该对应为一个`Entry`才对呀，为什么现在内存映射要映射`Chunk`呢？
+这里就有一个疑问了，通过[FastImageCache 架构分析](https://abson.github.io.com/2018/04/10/ios-fastimagecache-opensource-interpretation/)文章中知道，一个图片文件应该对应为一个`Entry`才对呀，为什么现在内存映射要映射`Chunk`呢？
 因为内存映射文件越大越有效果呀，不然小数据通过`read()`函数直接进入内核拷贝字节这种做法就跟内存映射没有对比了。
 
 为了让映射文件越大， FastImageCache 甚至直接在存储图片的时候就直接降图片解码了：

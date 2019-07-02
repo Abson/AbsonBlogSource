@@ -51,7 +51,7 @@ total 0x100003000i
 ```
 可以看到 Mac 的程序入口, 也就是说程序加载器把可执行文件加载到内存的虚拟地址基址是 0x100000000。
 
-上图展示了程序的地址空间分配图，在 Linux 下，一个进程的地址空间一般为4GB(内核地址空间1G，用户地址空间3GB)，这里所说的地址空间都为虚拟内存地址(关于什么是虚拟内存，查看<a href="https://simplecodesky.com/2018/04/03/virtual-memory-from-csapp/"><span style="color:red">阅读CSAPP——虚拟内存篇</span></a>)。
+上图展示了程序的地址空间分配图，在 Linux 下，一个进程的地址空间一般为4GB(内核地址空间1G，用户地址空间3GB)，这里所说的地址空间都为虚拟内存地址(关于什么是虚拟内存，查看<a href="https://abson.github.io.com/2018/04/03/virtual-memory-from-csapp/"><span style="color:red">阅读CSAPP——虚拟内存篇</span></a>)。
 
 **系统调用**
 系统调用在类Unix系统中指的是活跃的进程对内核所提供的服务进行请求。例如输入/输出(I/O和进程创建)。

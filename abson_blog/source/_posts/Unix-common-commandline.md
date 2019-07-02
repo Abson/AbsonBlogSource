@@ -272,7 +272,11 @@ ps -ef|grep ssh
 ```
 **列出目前所有的正在内存中的程序**
 ```
-ps aux
+ps aux | egrep '(nginx|PID)'
+```
+**查找进程详细信息**
+```
+sudo ps axw -o pid,ppid,user,%cpu,vsz,wchan,command | egrep '(nginx|PID)'
 ```
 
 ----
